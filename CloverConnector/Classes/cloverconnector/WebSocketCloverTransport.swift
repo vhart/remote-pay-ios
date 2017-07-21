@@ -85,38 +85,40 @@ class WebSocketCloverTransport: CloverTransport {
 
         if let socket = socket {
             var pairing = false;
-            socket.onConnect = {
+            socket.onConnect = { [weak self] in
                 print("websocket is connected")
                 pairing = true
 
-                self.schedulePing()
-                self.sendPairingRequest()
+                self?.schedulePing()
+                self?.sendPairingRequest()
             }
-            socket.onDisconnect = { (error: NSError?) in
+            socket.onDisconnect = { [weak self] (error: NSError?) in
+                guard let strongSelf = self else { return }
                 print("websocket is disconnected: \(error?.localizedDescription)")
                 //print(error?.userInfo[NSUnderlyingErrorKey])
-                for obs in self.observers {
-                    (obs as! CloverTransportObserver).onDeviceDisconnected(self)
+                for obs in strongSelf.observers {
+                    (obs as! CloverTransportObserver).onDeviceDisconnected(strongSelf)
                 }
-                self.disconnectTimer?.invalidate()
-                self.reportDisconnectTimer?.invalidate()
+                strongSelf.disconnectTimer?.invalidate()
+                strongSelf.reportDisconnectTimer?.invalidate()
                 
-                self.socket = nil
+                strongSelf.socket = nil
                 
-                if(self.disposed) {
+                if(strongSelf.disposed) {
                     return
                 }
                 
                 
-                let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(self.reconnectDelay) * Double(NSEC_PER_SEC)))
+                let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(strongSelf.reconnectDelay) * Double(NSEC_PER_SEC)))
                 dispatch_after(delayTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-                    self.initialize(endpoint)
+                    strongSelf.initialize(endpoint)
                 })
             }
             
-            socket.onText = { (text: String) in
+            socket.onText = { [weak self] (text: String) in
                 debugPrint("websocket onText: \(text)")
-                self.resetPong()
+                guard let strongSelf = self else { return }
+                strongSelf.resetPong()
                 if (pairing) {
                     //
                     let parser:Mapper<PairingResponseMessage> = Mapper<PairingResponseMessage>()
@@ -124,7 +126,7 @@ class WebSocketCloverTransport: CloverTransport {
                     if(remoteMessage?.method == PairingCode.PAIRING_CODE) {
                         if let pcm:PairingCodeMessage = Mapper<PairingCodeMessage>().map((remoteMessage?.payload)!) {
                             debugPrint("Got pairing code: \(pcm.pairingCode)")
-                            self.pairingConfig.onPairingCode(pcm.pairingCode!)
+                            strongSelf.pairingConfig.onPairingCode(pcm.pairingCode!)
                         } else {
                             debugPrint("Error getting pairing code from: \(text)", stderr)
                         }
@@ -133,17 +135,17 @@ class WebSocketCloverTransport: CloverTransport {
                         if let pr:PairingResponse = Mapper<PairingResponse>().map((remoteMessage?.payload)!) {
                             if pr.pairingState == PairingCode.INITIAL || pr.pairingState == PairingCode.PAIRED {
                                 pairing = false;
-                                self.pairingAuthToken = pr.authenticationToken
+                                strongSelf.pairingAuthToken = pr.authenticationToken
                                 debugPrint("pairing successful \(pr.authenticationToken)")
-                                self.pairingConfig.onPairingSuccess(pr.authenticationToken!)
+                                strongSelf.pairingConfig.onPairingSuccess(pr.authenticationToken!)
                                 
-                                for obs in self.observers {
-                                    (obs as! CloverTransportObserver).onDeviceReady(self)
+                                for obs in strongSelf.observers {
+                                    (obs as! CloverTransportObserver).onDeviceReady(strongSelf)
                                 }
                             } else if pr.pairingState == PairingCode.FAILED {
                                 pairing = true
                                 debugPrint("pairing failed")
-                                self.pairingAuthToken = nil
+                                strongSelf.pairingAuthToken = nil
                                 //self.sendPairingRequest() // fail causes a disconnect, so this is taken care of in reconnect
                             }
                         }
@@ -157,7 +159,7 @@ class WebSocketCloverTransport: CloverTransport {
 
                 } else {
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
-                        for obs in self.observers {
+                        for obs in strongSelf.observers {
                             (obs as! CloverTransportObserver).onMessage(text)
                         }
                     }
@@ -167,9 +169,9 @@ class WebSocketCloverTransport: CloverTransport {
             socket.onData = { (data: NSData) in
                 debugPrint("got some data: \(data)") // don't expect this
             }
-            socket.onPong = { (Void) in
+            socket.onPong = { [weak self] (Void) in
 //                print(". \(self.df.stringFromDate(NSDate()))")
-                self.resetPong()
+                self?.resetPong()
             }
             // This only works in newer versions of Starscream
 //            socket.disableSSLCertValidation = disableSSLValidation
