@@ -39,7 +39,6 @@ class WebSocketCloverTransport: CloverTransport {
         debugPrint("deinit WebSocketCloverTransport")
     }
 
-    
     init?(endpointURL: String, posName:String, serialNumber:String, pairingAuthToken: String?, pairingDeviceConfiguration:PairingDeviceConfiguration, pongTimeout pt:Int? = 15, pingFrequency pf:Int? = 3, reconnectDelay rd:Int? = 2, reportConnectionProblemAfter rt:Int? = 20) {
 
         df.dateFormat = "y-MM-dd H:m:ss.SSSS"
@@ -92,12 +91,14 @@ class WebSocketCloverTransport: CloverTransport {
                 self?.schedulePing()
                 self?.sendPairingRequest()
             }
-            socket.onDisconnect = { [weak self] (error: NSError?) in
+            socket.onDisconnect = { [weak self] error in
                 guard let strongSelf = self else { return }
                 print("websocket is disconnected: \(error?.localizedDescription)")
                 //print(error?.userInfo[NSUnderlyingErrorKey])
                 for obs in strongSelf.observers {
-                    (obs as! CloverTransportObserver).onDeviceDisconnected(strongSelf)
+                    (obs as! CloverTransportObserver)
+                        .onDeviceDisconnected(strongSelf,
+                                              error: error)
                 }
                 strongSelf.disconnectTimer?.invalidate()
                 strongSelf.reportDisconnectTimer?.invalidate()

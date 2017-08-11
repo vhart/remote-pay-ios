@@ -31,8 +31,6 @@ public class CloverConnectorBroadcaster {
         }
     }
     
-    
-    
     public func notifyOnPaymentRefundResponse(_ refundPaymentResponse:RefundPaymentResponse) {
         for listener in listeners {
             if let listener = listener as? ICloverConnectorListener {

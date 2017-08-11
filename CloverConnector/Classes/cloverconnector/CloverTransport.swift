@@ -36,7 +36,7 @@ public class CloverTransport : NSObject {
     func onDeviceDisconnected() {
         ready = false
         for obs in observers {
-            (obs as! CloverTransportObserver).onDeviceDisconnected(self)
+            (obs as! CloverTransportObserver).onDeviceDisconnected(self, error: nil)
         }
     }
     

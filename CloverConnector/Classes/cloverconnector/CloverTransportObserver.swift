@@ -23,7 +23,7 @@ protocol CloverTransportObserver : AnyObject{
     /// Device is not there anymore
     /// </summary>
     /// <param name="transport"></param>
-    func onDeviceDisconnected(_ transport:CloverTransport)
+    func onDeviceDisconnected(_ transport:CloverTransport, error: NSError?)
     
     func onMessage(_ message:String)
 }

@@ -60,7 +60,7 @@ protocol CloverDeviceObserver:AnyObject {
     
     func onTxStartResponse(_ result:TxStartResponseResult, externalId:String, requestInfo: String?)
     
-    func onDeviceDisconnected( _ device:CloverDevice)
+    func onDeviceDisconnected( _ device:CloverDevice, errorEvent: CloverDeviceErrorEvent?)
     func onDeviceConnected(_ device:CloverDevice)
     func onDeviceReady(_ device:CloverDevice, discoveryResponseMessage:DiscoveryResponseMessage)
     
@@ -124,7 +124,7 @@ public class DefaultCloverDeviceObserver : CloverDeviceObserver {
     
     func onTxStartResponse(_ result:TxStartResponseResult, externalId:String, requestInfo: String?){}
     
-    func onDeviceDisconnected( _ device:CloverDevice){}
+    func onDeviceDisconnected( _ device:CloverDevice, errorEvent: CloverDeviceErrorEvent?){}
     func onDeviceConnected(_ device:CloverDevice){}
     func onDeviceReady(_ device:CloverDevice, discoveryResponseMessage:DiscoveryResponseMessage){}
     

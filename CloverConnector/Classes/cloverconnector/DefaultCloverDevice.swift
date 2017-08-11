@@ -34,13 +34,16 @@ class DefaultCloverDevice : CloverDevice, CloverTransportObserver {
         if let transport = config.getTransport() {
             super.init(packageName: config.getMessagePackageName(), transport: transport)
             transport.subscribe(self)
-            transport.initialize()
         } else {
             return nil      
         }
         
     }
-    
+
+    override func initialize() {
+        transport.initialize()
+    }
+
     func onDeviceConnected(_ transport:CloverTransport) {
         notifyListenersConnected()
     }
@@ -56,8 +59,16 @@ class DefaultCloverDevice : CloverDevice, CloverTransportObserver {
         }
     }
     
-    func onDeviceDisconnected(_ transport:CloverTransport) {
-        notifyListenersDisconnected()
+    func onDeviceDisconnected(_ transport:CloverTransport, error: NSError?) {
+        var errorEvent: CloverDeviceErrorEvent?
+
+        if let error = error {
+            errorEvent = CloverDeviceErrorEvent(errorType: .communication(.init(error: error)),
+                                                code: 0,
+                                                message: "device disconnect event")
+        }
+
+        notifyListenersDisconnected(errorEvent: errorEvent)
     }
     
     override func dispose() {
@@ -624,10 +635,10 @@ class DefaultCloverDevice : CloverDevice, CloverTransportObserver {
         }
     }
     
-    func notifyListenersDisconnected() {
+    func notifyListenersDisconnected(errorEvent errorEvent: CloverDeviceErrorEvent?) {
         for listener in deviceObservers {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-                (listener as? CloverDeviceObserver)?.onDeviceDisconnected(self)
+                (listener as? CloverDeviceObserver)?.onDeviceDisconnected(self, errorEvent: errorEvent)
             })
         }
     }
@@ -641,7 +652,6 @@ class DefaultCloverDevice : CloverDevice, CloverTransportObserver {
                 })
             }
         }
-        
     }
     
     func notifyListenersTxState(_ response:TxStateMessage) {
