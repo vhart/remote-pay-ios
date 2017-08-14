@@ -848,7 +848,7 @@ public class CloverConnector : NSObject, ICloverConnector {
         
         func onDeviceDisconnected(_ device: CloverDevice, errorEvent: CloverDeviceErrorEvent?) {
             cloverConnector.isReady = false
-            cloverConnector.broadcaster.notifyOnDisconnect()
+            cloverConnector.broadcaster.notifyOnDisconnect(withErrorEvent: errorEvent)
             if let errorEvent = errorEvent {
                 cloverConnector.broadcaster.notifyOnDeviceError(errorEvent)
             }

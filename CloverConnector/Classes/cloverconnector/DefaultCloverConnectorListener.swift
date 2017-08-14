@@ -124,7 +124,7 @@ public class DefaultCloverConnectorListener : NSObject, ICloverConnectorListener
     /*
      * called when the device is disconnected, or not responding
      */
-    public func  onDeviceDisconnected () -> Void {}
+    public func  onDeviceDisconnected(withErrorEvent event: CloverDeviceErrorEvent?) -> Void {}
     
     /*
      * callbacks if disablePrinting is enabled on the request

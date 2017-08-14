@@ -105,7 +105,7 @@ public protocol ICloverConnectorListener : AnyObject {
     /*
      * called when the device is disconnected, or not responding
      */
-    func  onDeviceDisconnected () -> Void
+    func  onDeviceDisconnected(withErrorEvent event: CloverDeviceErrorEvent?) -> Void
     
     /**
      * Called when the Clover device requires confirmation for a payment

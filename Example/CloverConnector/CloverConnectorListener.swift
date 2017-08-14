@@ -523,7 +523,7 @@ public class CloverConnectorListener : NSObject, ICloverConnectorListener, UIAle
         ready = false // the device is connected, but not ready to communicate
     }
     
-    public func onDeviceDisconnected() {
+    public func onDeviceDisconnected(withErrorEvent event: CloverDeviceErrorEvent?) {
         if ready {
             showMessage("Disconnected", duration: 2)
         }

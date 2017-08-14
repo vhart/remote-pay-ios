@@ -41,7 +41,7 @@ class TabBarController : UITabBarController {
                 self.barController.tabBar.backgroundColor = UIColor.yellowColor()
             }
         }
-        override func onDeviceDisconnected() {
+        override func onDeviceDisconnected(withErrorEvent event: CloverDeviceErrorEvent?) {
             dispatch_async(dispatch_get_main_queue()) {
                 self.barController.tabBar.backgroundColor = UIColor.redColor()
             }

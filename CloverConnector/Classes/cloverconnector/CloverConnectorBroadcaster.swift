@@ -129,10 +129,10 @@ public class CloverConnectorBroadcaster {
         }
     }
     
-    public func notifyOnDisconnect() {
+    public func notifyOnDisconnect(withErrorEvent event: CloverDeviceErrorEvent?) {
         for listener in listeners {
             if let listener = listener as? ICloverConnectorListener {
-                listener.onDeviceDisconnected()
+                listener.onDeviceDisconnected(withErrorEvent: event)
             }
         }
     }
