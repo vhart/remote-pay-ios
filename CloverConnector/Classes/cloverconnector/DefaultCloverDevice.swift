@@ -60,8 +60,8 @@ class DefaultCloverDevice : CloverDevice, CloverTransportObserver {
         notifyListenersDisconnected()
     }
     
-    func onDeviceError(_ errorType:CloverDeviceErrorType, int:Int, message:String) {
-        notifyListenersDeviceError(errorType, int:int, message:message)
+    func onDeviceError(_ errorEvent: CloverDeviceErrorEvent) {
+        notifyListenersDeviceError(errorEvent)
     }
     
     override func dispose() {
@@ -636,10 +636,10 @@ class DefaultCloverDevice : CloverDevice, CloverTransportObserver {
         }
     }
     
-    func notifyListenersDeviceError(_ errorType:CloverDeviceErrorType, int:Int, message:String) {
+    func notifyListenersDeviceError(_ errorEvent: CloverDeviceErrorEvent) {
         for listener in deviceObservers {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-                (listener as? CloverDeviceObserver)?.onDeviceError(errorType, int: int, message: message)
+                (listener as? CloverDeviceObserver)?.onDeviceError(errorEvent)
             })
         }
     }

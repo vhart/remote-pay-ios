@@ -545,16 +545,16 @@ public class CloverConnectorListener : NSObject, ICloverConnectorListener, UIAle
     
     
     public func onDeviceError(_ deviceErrorEvent: CloverDeviceErrorEvent) {
-        if deviceErrorEvent.errorType == .CONNECTION_ERROR && suppressConnectionErrors == true {
+        if deviceErrorEvent.error == .connectionError && suppressConnectionErrors == true {
             return //we've already handled this error since the last successful connection, don't spam the user
         }
         
-        if deviceErrorEvent.errorType == .CONNECTION_ERROR {
+        if deviceErrorEvent.error == .connectionError {
             suppressConnectionErrors = true
         }
         
         dispatch_async(dispatch_get_main_queue()){
-            let uiac = UIAlertController(title: deviceErrorEvent.errorType.rawValue, message: deviceErrorEvent.message, preferredStyle: .Alert)
+            let uiac = UIAlertController(title: "Device Error", message: deviceErrorEvent.message, preferredStyle: .Alert)
             self.uiAlertController = uiac
             self.viewController?.presentViewController(uiac, animated: false, completion: {})
             self.uiAlertController?.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {

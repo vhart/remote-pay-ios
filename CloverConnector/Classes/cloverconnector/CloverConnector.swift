@@ -72,7 +72,7 @@ public class CloverConnector : NSObject, ICloverConnector {
                 self.device = device
                 device.initialize()
             } else {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "initializeConnection: The Clover Device is null, maybe the configuration is invalid"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .connection(.noReaderConnected), code: 0, message: "initializeConnection: The Clover Device is null, maybe the configuration is invalid"));
             }
         }
     }
@@ -80,7 +80,7 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func sale(_ saleRequest: SaleRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "sale: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "sale: The Clover Device is not ready"));
                 return;
             } else if(deviceObserver?.lastRequest != nil) {
                 // not using FinishCancel because that will clear the last request
@@ -109,7 +109,7 @@ public class CloverConnector : NSObject, ICloverConnector {
             saleAuth(saleRequest, suppressTipScreen: tos, requestInfo: TxStartRequestMessage.SALE_REQUEST)
         } else {
             deviceObserver!.onFinishCancel(false, result:ResultCode.ERROR, reason: "Device Connection Error", message: "In sale : The device is not connected.", requestInfo: TxStartRequestMessage.SALE_REQUEST);
-            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "initializeConnection: The Clover Device is null"));
+            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "initializeConnection: The Clover Device is null"));
         }
     }
     
@@ -117,7 +117,7 @@ public class CloverConnector : NSObject, ICloverConnector {
         if let device = device {
             
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "auth: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "auth: The Clover Device is not ready"));
                 return;
             } else if(deviceObserver?.lastRequest != nil) {
                 // not using FinishCancel because that will clear the last request
@@ -148,7 +148,7 @@ public class CloverConnector : NSObject, ICloverConnector {
             saleAuth(authRequest, suppressTipScreen: true,requestInfo:TxStartRequestMessage.AUTH_REQUEST)
         } else {
             deviceObserver!.onFinishCancel(false, result:ResultCode.ERROR, reason: "Device Connection Error", message: "In auth : The device is not connected.", requestInfo: TxStartRequestMessage.AUTH_REQUEST);
-            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "initializeConnection: The Clover Device is null"));
+            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "initializeConnection: The Clover Device is null"));
         }
     }
     
@@ -156,7 +156,7 @@ public class CloverConnector : NSObject, ICloverConnector {
         if let device = device {
             
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "tipAdjustAuth: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "tipAdjustAuth: The Clover Device is not ready"));
                 return;
             } else if(tipAdjustAuthRequest.tipAmount <= 0) {
                 deviceObserver!.onAuthTipAdjustedResponse(false, result: ResultCode.FAIL, reason: "Request validation error", message: "In PreAuth : PreAuthRequest - the request tipAmount cannot be zero. ");
@@ -170,7 +170,7 @@ public class CloverConnector : NSObject, ICloverConnector {
             
         } else {
             deviceObserver!.onAuthTipAdjustedResponse(false, result: ResultCode.ERROR, reason: "Device Connection Error", message: "In preAuth : The device is not connected.");
-            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "initializeConnection: The Clover Device is null"));
+            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "initializeConnection: The Clover Device is null"));
         }
         
     }
@@ -179,7 +179,7 @@ public class CloverConnector : NSObject, ICloverConnector {
         if let device = device {
             
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "preAuth: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "preAuth: The Clover Device is not ready"));
                 return;
             } else if(preAuthRequest.amount <= 0) {
                 deviceObserver!.onFinishCancel(false, result:ResultCode.FAIL, reason: "Request validation error", message: "In PreAuth : PreAuthRequest - the request amount cannot be zero. ", requestInfo: TxStartRequestMessage.PREAUTH_REQUEST);
@@ -204,7 +204,7 @@ public class CloverConnector : NSObject, ICloverConnector {
             saleAuth(preAuthRequest, suppressTipScreen: true, requestInfo: TxStartRequestMessage.PREAUTH_REQUEST)
         } else {
             deviceObserver!.onFinishCancel(false, result:ResultCode.ERROR, reason: "Device Connection Error", message: "In preAuth : The device is not connected.", requestInfo: TxStartRequestMessage.PREAUTH_REQUEST);
-            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "initializeConnection: The Clover Device is null"));
+            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "initializeConnection: The Clover Device is null"));
         }
         
     }
@@ -215,7 +215,7 @@ public class CloverConnector : NSObject, ICloverConnector {
             let tipAmount = capturePreAuthRequest.tipAmount ?? 0
             
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "capturePreAuth: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "capturePreAuth: The Clover Device is not ready"));
                 return;
             } else if (capturePreAuthRequest.amount < 0) {
                 deviceObserver!.onCapturePreAuthResponse(false, result:ResultCode.FAIL, reason: "Request validation error", message: "In capturePreAuth : The amount must be greater than 0")
@@ -229,7 +229,7 @@ public class CloverConnector : NSObject, ICloverConnector {
             device.doCaptureAuth(capturePreAuthRequest.paymentId, amount: capturePreAuthRequest.amount, tipAmount: tipAmount)
         } else {
             deviceObserver!.onCapturePreAuthResponse(false, result: ResultCode.ERROR, reason: "Device Connection Error", message: "In preAuth : The device is not connected.")
-            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "initializeConnection: The Clover Device is null"));
+            //notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "initializeConnection: The Clover Device is null"));
         }
     }
     
@@ -327,24 +327,24 @@ public class CloverConnector : NSObject, ICloverConnector {
             
         } else {
             // no device, but shouldn't get here, as the callers should have made this check
-            broadcaster.notifyOnDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "Device is not connected."));
+            broadcaster.notifyOnDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "Device is not connected."));
         }
     }
 
     public func acceptSignature(_ signatureVerifyRequest: VerifySignatureRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "acceptSignature: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "acceptSignature: The Clover Device is not ready"));
                 return;
             } else if let payment = signatureVerifyRequest.payment {
                 device.doSignatureVerified(payment, verified: true)
             } else {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "In acceptSignature: The payment is required"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.missingPayment), code: 0, message: "In acceptSignature: The payment is required"));
                 return
             }
             
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "In acceptSignautre: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "In acceptSignautre: The Clover Device is null"));
         }
         
     }
@@ -352,24 +352,24 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func rejectSignature(_ signatureVerifyRequest: VerifySignatureRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "rejectSignature: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "rejectSignature: The Clover Device is not ready"));
                 return;
             } else if let payment = signatureVerifyRequest.payment {
                 device.doSignatureVerified(payment, verified: false)
             } else {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "In rejectSignature: The payment is required"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.missingPayment), code: 0, message: "In rejectSignature: The payment is required"));
                 return
             }
             
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "In rejectSignature: The Clover Device is not connected"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "In rejectSignature: The Clover Device is not connected"));
         }
     }
     
     public func refundPayment(_ refundPaymentRequest: RefundPaymentRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "refundPayment: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "refundPayment: The Clover Device is not ready"));
                 return;
             } else if(!refundPaymentRequest.fullRefund && refundPaymentRequest.amount ?? 0 <= 0) {
                 let prr = RefundPaymentResponse(success:false, result:ResultCode.FAIL)
@@ -401,7 +401,7 @@ public class CloverConnector : NSObject, ICloverConnector {
         deviceObserver!.lastRequest = manualRefundRequest
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "manualRefund: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "manualRefund: The Clover Device is not ready"));
                 return;
             } else if manualRefundRequest.amount <= 0 {
                 deviceObserver!.onFinishCancel(false, result: ResultCode.FAIL, reason: "Invalid argument", message: "The amount must be greater than 0", requestInfo: TxStartRequestMessage.CREDIT_REQUEST)
@@ -450,7 +450,7 @@ public class CloverConnector : NSObject, ICloverConnector {
         
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "voidPayment: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "voidPayment: The Clover Device is not ready"));
                 return;
             }
             let payment = CLVModels.Payments.Payment()
@@ -472,7 +472,7 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func vaultCard(_ vaultCardRequest: VaultCardRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "vaultCard: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "vaultCard: The Clover Device is not ready"));
                 return;
             } else if merchantInfo.supportsVaultCards {
                 device.doVaultCard(vaultCardRequest.cardEntryMethods ?? self.cardEntryMethods)
@@ -489,12 +489,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func closeout(_ closeoutRequest: CloseoutRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "closeout: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "closeout: The Clover Device is not ready"));
                 return;
             }
             device.doCloseout(closeoutRequest.allowOpenTabs, batchId: closeoutRequest.batchId)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "In Closeout: The Clover Device is not connected"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "In Closeout: The Clover Device is not connected"));
         }
         
     }
@@ -502,12 +502,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func displayPaymentReceiptOptions(_ orderId:String, paymentId:String) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "displayPaymentReceiptOptions: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "displayPaymentReceiptOptions: The Clover Device is not ready"));
                 return;
             }
             device.doShowPaymentReceiptScreen(orderId, paymentId:paymentId);
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "In showPaymentReceiptOptions: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "In showPaymentReceiptOptions: The Clover Device is null"));
         }
     
     }
@@ -516,13 +516,13 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func showMessage(_ message: String) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showMessage: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "showMessage: The Clover Device is not ready"));
                 return;
             }
             device.doTerminalMessage(message)
             
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showMessage: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "showMessage: The Clover Device is null"));
         }
 
     }
@@ -531,12 +531,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func printText(_ lines: [String]) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "printText: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "printText: The Clover Device is not ready"));
                 return;
             }
             device.doPrintText(lines)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "printText: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "printText: The Clover Device is null"));
         }
         
     }
@@ -545,24 +545,24 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func printImageFromURL(_ url:String) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "printImageFromURL: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "printImageFromURL: The Clover Device is not ready"));
                 return;
             }
             device.doPrintImage(url)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "printImageFromURL: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "printImageFromURL: The Clover Device is null"));
         }
     }
     
     public func printImage(_ image: UIImage) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "printImage: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "printImage: The Clover Device is not ready"));
                 return;
             }
             device.doPrintImage(image);
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "printImage: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "printImage: The Clover Device is null"));
         }
 
     }
@@ -571,12 +571,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func cancel() {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "cancel: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "cancel: The Clover Device is not ready"));
                 return;
             }
             device.doKeyPress(KeyPress.esc)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "cancel: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "cancel: The Clover Device is null"));
         }
 
     }
@@ -585,12 +585,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func openCashDrawer(_ reason:String) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "openCashDrawer: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "openCashDrawer: The Clover Device is not ready"));
                 return;
             }
             device.doOpenCashDrawer(reason)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "openCashDrawer: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "openCashDrawer: The Clover Device is null"));
         }
 
         
@@ -601,12 +601,12 @@ public class CloverConnector : NSObject, ICloverConnector {
         deviceObserver?.lastRequest = nil
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "resetDevice: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "resetDevice: The Clover Device is not ready"));
                 return;
             }
             device.doBreak()
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "resetDevice: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "resetDevice: The Clover Device is null"));
         }
     }
     
@@ -614,12 +614,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func showWelcomeScreen() {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showWelcomeScreen: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "showWelcomeScreen: The Clover Device is not ready"));
                 return;
             }
             device.doShowWelcomeScreen()
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showWelcomeScreen: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "showWelcomeScreen: The Clover Device is null"));
         }
 
     }
@@ -628,12 +628,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func showThankYouScreen() {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showThankYouScreen: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "showThankYouScreen: The Clover Device is not ready"));
                 return;
             }
             device.doShowThankYouScreen()
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showThankYouScreen: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "showThankYouScreen: The Clover Device is null"));
         }
 
     }
@@ -642,12 +642,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func showDisplayOrder(_ order: DisplayOrder) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showDisplayOrder: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "showDisplayOrder: The Clover Device is not ready"));
                 return;
             }
             device.doOrderUpdate(order, orderOperation: nil)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "showDisplayOrder: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "showDisplayOrder: The Clover Device is null"));
         }
 
     }
@@ -656,12 +656,12 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func removeDisplayOrder(_ order: DisplayOrder) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "removeDisplayOrder: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "removeDisplayOrder: The Clover Device is not ready"));
                 return;
             }
             device.doOrderUpdate(DisplayOrder(), orderOperation: nil)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "removeDisplayOrder: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "removeDisplayOrder: The Clover Device is null"));
         }
     }
     
@@ -670,15 +670,15 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func invokeInputOption(_ inputOption:InputOption) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "invokeInputOption: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "invokeInputOption: The Clover Device is not ready"));
                 return;
             } else if let kp = inputOption.keyPress {
                 device.doKeyPress(kp);
             } else {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.VALIDATION_ERROR, code: 0, message: "invokeInputOption: the keyPress is required"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .validation(.keyPressRequired), code: 0, message: "invokeInputOption: the keyPress is required"));
             }
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "invokeInputOption: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "invokeInputOption: The Clover Device is null"));
         }
 
     }
@@ -690,7 +690,7 @@ public class CloverConnector : NSObject, ICloverConnector {
     public func readCardData( _ request:ReadCardDataRequest ) -> Void {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "readCardData: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "readCardData: The Clover Device is not ready"));
                 return;
             }
             let builder:PayIntent.Builder = PayIntent.Builder(amount: 0, externalId: String(arc4random()))
@@ -703,91 +703,91 @@ public class CloverConnector : NSObject, ICloverConnector {
             
             device.doReadCardData(builder.build())
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "readCardData: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "readCardData: The Clover Device is null"));
         }
     }
     
     public func acceptPayment( _ payment:CLVModels.Payments.Payment ) -> Void {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "readCardData: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "readCardData: The Clover Device is not ready"));
                 return;
             }
             device.doAcceptPayment(payment)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "acceptPayment: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "acceptPayment: The Clover Device is null"));
         }
     }
     
     public func rejectPayment( _ payment:CLVModels.Payments.Payment, challenge:Challenge ) -> Void {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "rejectPayment: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "rejectPayment: The Clover Device is not ready"));
                 return;
             }
             device.doRejectPayment(payment, challenge: challenge)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "rejectPayment: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "rejectPayment: The Clover Device is null"));
         }
     }
     
     public func retrievePendingPayments() -> Void {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "retrievePendingPayments: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "retrievePendingPayments: The Clover Device is not ready"));
                 return;
             }
             device.doRetrievePendingPayments();
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "retrievePendingPayments: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "retrievePendingPayments: The Clover Device is null"));
         }
     }
     
     public func startCustomActivity(request: CustomActivityRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "startCustomActivity: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "startCustomActivity: The Clover Device is not ready"));
                 return;
             }
             device.doStartActivity(action: request.action, payload: request.payload, nonBlocking: request.nonBlocking ?? false)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "startCustomActivity: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "startCustomActivity: The Clover Device is null"));
         }
     }
     
     public func sendMessageToActivity(request: MessageToActivity) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "sendMessageToActivity: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "sendMessageToActivity: The Clover Device is not ready"));
                 return
             }
             device.doSendMessageToActivity(action: request.action, payload: request.payload)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "sendMessageToActivity: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "sendMessageToActivity: The Clover Device is null"));
         }
     }
     
     public func retrievePayment(_ request: RetrievePaymentRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "retrievePayment: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "retrievePayment: The Clover Device is not ready"));
                 return;
             }
             device.doRetrievePayment(request.externalPayentId)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "retrievePayment: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "retrievePayment: The Clover Device is null"));
         }
     }
     
     public func retrieveDeviceStatus(_ request: RetrieveDeviceStatusRequest) {
         if let device = device {
             if !isReady {
-                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "retrieveDeviceStatus: The Clover Device is not ready"));
+                notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.deviceNotReady), code: 0, message: "retrieveDeviceStatus: The Clover Device is not ready"));
                 return;
             }
             device.doRetrieveDeviceStatus(request.sendLastMessage)
         } else {
-            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: CloverDeviceErrorType.COMMUNICATION_ERROR, code: 0, message: "retrieveDeviceStatus: The Clover Device is null"));
+            notifyListenersDeviceError(CloverDeviceErrorEvent(errorType: .communication(.noReaderConnected), code: 0, message: "retrieveDeviceStatus: The Clover Device is null"));
         }
     }
     
@@ -853,8 +853,7 @@ public class CloverConnector : NSObject, ICloverConnector {
             }
         }
         
-        func onDeviceError(errorType: CloverDeviceErrorType, int: Int, message: String) {
-            let errorEvent = CloverDeviceErrorEvent(errorType: errorType, code: int, message: message)
+        func onDeviceError(errorEvent: CloverDeviceErrorEvent) {
             self.cloverConnector.broadcaster.notifyOnDeviceError(errorEvent)
         }
         

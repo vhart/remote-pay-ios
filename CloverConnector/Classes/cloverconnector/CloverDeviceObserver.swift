@@ -67,10 +67,10 @@ protocol CloverDeviceObserver:AnyObject {
     /// Device experienced an error on the transport
     ///
     /// - Parameters:
-    ///   - errorType: Type of the CloverDeviceErrorType being thrown
+    ///   - error: Type of the CloverDeviceError being thrown
     ///   - int: Code from the NSError experienced earlier in the flow
     ///   - message: LocalizedDescription from the NSError experienced earlier in the flow
-    func onDeviceError(_ errorType:CloverDeviceErrorType, int:Int, message:String)
+    func onDeviceError(_ errorEvent: CloverDeviceErrorEvent)
     
     func onMessageAck(_ sourceMessageId:String)
     
@@ -135,7 +135,7 @@ public class DefaultCloverDeviceObserver : CloverDeviceObserver {
     func onDeviceDisconnected( _ device:CloverDevice){}
     func onDeviceConnected(_ device:CloverDevice){}
     func onDeviceReady(_ device:CloverDevice, discoveryResponseMessage:DiscoveryResponseMessage){}
-    func onDeviceError(_ errorType:CloverDeviceErrorType, int:Int, message:String){}
+    func onDeviceError(_ errorEvent: CloverDeviceErrorEvent){}
     
     func onMessageAck(_ sourceMessageId:String){}
     

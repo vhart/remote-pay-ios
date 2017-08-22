@@ -102,9 +102,14 @@ class WebSocketCloverTransport: CloverTransport {
                 
                 if let error = error {
                     debugPrint("websocket is disconnected: " + error.localizedDescription)
-                    
+                    let errorEvent = CloverDeviceErrorEvent(
+                        errorType: .connection(.init(error:error)),
+                        code: error.code,
+                        message: error.localizedDescription
+                    )
+
                     for obs in strongSelf.observers {
-                        (obs as! CloverTransportObserver).onDeviceError(.CONNECTION_ERROR, int: error.code, message: error.localizedDescription)
+                        (obs as! CloverTransportObserver).onDeviceError(errorEvent)
                     }
                 } else {
                     debugPrint("websocket is disconnected")
