@@ -68,7 +68,7 @@ NOTE: To use the Swift 2.3 compatible version of this library, you will need to 
 - Set the 'Use Legacy Swift Language Version' flag in the build settings for your project
 - Example cocoapod (http://cocoapods.org/) `Podfile` snippet
 ---
-```
+```ruby
 platform :ios, '8.0'
 
 use_frameworks!
@@ -93,7 +93,7 @@ end
 ---
 Sample code using CloverConnector
 
-```
+```swift
 import CloverConnector
 
 class ConnectionManager : DefaultCloverConnectorListener, PairingDeviceConfiguration {
